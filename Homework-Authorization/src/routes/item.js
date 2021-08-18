@@ -39,13 +39,21 @@ module.exports = (db) => {
     const uid = req.uid;
     const { quantity, name } = req.body;
     const id = req.params.id;
-    try {
-      const item = await db.updateItem(id, { quantity, name, uid });
-      res.status(201).send(item);
-    } catch (error) {
-      error.msg = `Failed to update record for ${name || 'item with no name'}`;
-      error.type = 'malformed-request';
-      next(error);
+    // Check if item belongs to user
+    const targetItem = await db.findItem(id);
+    if (targetItem.uid === uid) {
+      try {
+        const item = await db.updateItem(id, { quantity, name, uid });
+        res.status(201).send(item);
+      } catch (error) {
+        error.msg = `Failed to update record for ${
+          name || 'item with no name'
+        }`;
+        error.type = 'malformed-request';
+        next(error);
+      }
+    } else {
+      res.status(401).send('Unauthorized');
     }
   });
 
