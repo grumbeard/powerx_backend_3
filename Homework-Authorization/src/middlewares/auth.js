@@ -6,9 +6,9 @@ module.exports = (service) => {
     if (authHeader) {
       const token = authHeader.split(' ')[1];
       try {
-        const { id } = await service.verifyToken(token);
-        if (id) {
-          req.id = id;
+        const { uid } = await service.verifyToken(token);
+        if (uid) {
+          req.uid = uid;
           next();
         } else {
           throw new Error();

@@ -31,7 +31,7 @@ module.exports = (db) => {
           password_hash: hashed,
         });
         // Generate token for new user
-        const token = service.createToken({ id: newUser.id });
+        const token = service.createToken({ uid: newUser.id });
         return token;
       } else {
         throw new Error({ msg: 'Unable to generate password hash' });
@@ -52,7 +52,7 @@ module.exports = (db) => {
       );
       if (isCorrectPassword) {
         // Generate token for authenticated user
-        const token = service.createToken({ id: user.id });
+        const token = service.createToken({ uid: user.id });
         return token;
       } else {
         return null;

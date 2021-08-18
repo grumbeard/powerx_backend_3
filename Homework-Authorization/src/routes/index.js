@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const auth = require('./auth');
 const item = require('./item');
+const user = require('./user');
 
 module.exports = (db, authServices, authMiddleWare) => {
   router.get('/', (req, res) => {
@@ -10,6 +11,7 @@ module.exports = (db, authServices, authMiddleWare) => {
   router.use('/', auth(authServices));
   router.use(authMiddleWare);
 
+  router.use('/users', user(db));
   router.use('/items', item(db));
 
   router.all('*', (req, res, next) => {

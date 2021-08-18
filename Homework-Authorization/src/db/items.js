@@ -5,14 +5,19 @@ module.exports = (pool) => {
 
   db.insertItem = async (item) => {
     const res = await pool.query(
-      'INSERT INTO Items (name,quantity) VALUES ($1,$2) RETURNING *',
-      [item.name, item.quantity]
+      'INSERT INTO Items (name,quantity,uid) VALUES ($1,$2, $3) RETURNING *',
+      [item.name, item.quantity, item.uid]
     );
     return res.rowCount ? new Item(res.rows[0]) : null;
   };
 
   db.findAllItems = async () => {
     const res = await pool.query('SELECT * FROM Items');
+    return res.rows.map((row) => new Item(row));
+  };
+
+  db.findAllItemsByUser = async (uid) => {
+    const res = await pool.query('SELECT * FROM Items WHERE uid = $1', [uid]);
     return res.rows.map((row) => new Item(row));
   };
 

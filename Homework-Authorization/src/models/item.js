@@ -1,9 +1,10 @@
 class Item {
-  constructor({ id, name, quantity }) {
-    this.id = id
-    this.name = name
-    this.quantity = quantity
+  constructor({ id, name, quantity, uid }) {
+    this.id = id;
+    this.name = name;
+    this.quantity = quantity;
+    this.uid = uid;
   }
 }
 
-module.exports = Item
+module.exports = Item;

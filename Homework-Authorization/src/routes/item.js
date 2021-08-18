@@ -7,9 +7,10 @@ module.exports = (db) => {
   });
 
   router.post('/', async (req, res, next) => {
+    const uid = req.uid;
     const { quantity, name } = req.body;
     try {
-      const item = await db.insertItem({ quantity, name });
+      const item = await db.insertItem({ quantity, name, uid });
       res.status(201).send(item);
     } catch (error) {
       error.msg = `Failed to create record for ${name || 'item with no name'}`;
@@ -35,10 +36,11 @@ module.exports = (db) => {
   });
 
   router.put('/:id', async (req, res, next) => {
+    const uid = req.uid;
     const { quantity, name } = req.body;
     const id = req.params.id;
     try {
-      const item = await db.updateItem(id, { quantity, name });
+      const item = await db.updateItem(id, { quantity, name, uid });
       res.status(201).send(item);
     } catch (error) {
       error.msg = `Failed to update record for ${name || 'item with no name'}`;
