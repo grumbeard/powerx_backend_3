@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
+// const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_ALGO = process.env.JWT_ALGO;
 const JWT_EXPIRY = process.env.JWT_EXPIRY;
@@ -61,6 +62,15 @@ module.exports = (db) => {
 
   service.checkPassword = (password, hash) => {
     return bcrypt.compare(password, hash);
+  };
+
+  service.verifyToken = (token) => {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      return decoded;
+    } catch (error) {
+      return null;
+    }
   };
 
   return service;

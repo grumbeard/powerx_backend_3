@@ -12,6 +12,9 @@ module.exports = (router) => {
     if (error.type === 'malformed-request') {
       console.log(error.msg);
       res.status(400).send(error);
+    } else if (error.type === 'unauthorized') {
+      console.log(error.msg);
+      res.status(401).send(error);
     } else {
       console.log('Some error occured');
       res.status(500).send(error);

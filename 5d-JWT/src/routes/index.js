@@ -1,8 +1,13 @@
 const router = require('express').Router();
 const auth = require('./auth');
 
-module.exports = (db, authServices) => {
+module.exports = (db, authServices, authMiddleWare) => {
+  router.get('/', (req, res) => {
+    res.status(200).send('Please login or register');
+  });
+
   router.use('/', auth(authServices));
+  router.use(authMiddleWare);
 
   router.get('/items', async (req, res, next) => {
     const items = await db.findAllItems();
