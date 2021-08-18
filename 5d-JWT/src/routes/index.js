@@ -1,6 +1,9 @@
 const router = require('express').Router();
+const auth = require('./auth');
 
-module.exports = (db) => {
+module.exports = (db, authServices) => {
+  router.use('/', auth(authServices));
+
   router.get('/items', async (req, res, next) => {
     const items = await db.findAllItems();
     res.status(200).send(items);
@@ -63,7 +66,7 @@ module.exports = (db) => {
     }
   });
 
-  router.all('/items/*', (req, res, next) => {
+  router.all('*', (req, res, next) => {
     res
       .status(404)
       .set({ 'Content-Type': 'text/html' })
