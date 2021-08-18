@@ -1,22 +1,24 @@
 # Assignment: Backend Development (Session 3)
 
 :point_right: Homework-Authorization
+
 The endpoints for this project can be tested via Postman.
 
 ## Features
 
-### Retrieve all Items created by User
+### 1. Retrieve all Items created by User
 
 `GET /users/:id` where id parameter is the id of target user.
 
-### Update Items (Authorized for logged in user who created target item)
+### 2. Update Items (Authorized for logged in user who created target item)
 
 `PUT /items/:id` where id parameter is the id of target item.
-NOTE: Other logged in users may still:
 
+NOTE: Other logged in users may still:
 - View all items created by all users
 - Delete any item created by any user
-  ==> Middleware can be built if such behavior should be prevented.
+
+==> Middleware can be built if such behavior should be prevented.
 
 ## Approach
 
