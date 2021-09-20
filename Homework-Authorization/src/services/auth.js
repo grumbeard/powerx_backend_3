@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { CustomError } = require('../middlewares/errors');
 
 // const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -34,7 +35,7 @@ module.exports = (db) => {
         const token = service.createToken({ uid: newUser.id });
         return token;
       } else {
-        throw new Error('Unable to generate password hash');
+        throw new CustomError('Unable to generate password hash');
       }
     }
   };

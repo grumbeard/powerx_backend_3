@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { CustomError } = require('../middlewares/errors');
 
 module.exports = (service) => {
   router.post('/register', async (req, res, next) => {
@@ -8,15 +9,10 @@ module.exports = (service) => {
       if (token) {
         res.status(200).send({ token: token });
       } else {
-        throw new Error('user-exists');
+        throw new CustomError(`User '${req.body.username}' already exists`, 'malformed-request');
       }
     } catch (error) {
-      switch(error.message) {
-      case 'user-exists':
-        error.message = `User '${req.body.username}' already exists`;
-        error.cause = 'malformed-request';
-        break;
-      default:
+      if (!error.cause) {
         error.message = 'Invalid inputs provided';
         error.cause = 'malformed-request';
       }
@@ -31,18 +27,14 @@ module.exports = (service) => {
       if (token) {
         res.status(200).send({ token: token });
       } else {
-        throw new Error('incorrect-credentials');
+        throw new CustomError(`Username '${username}' does not exist or password is incorrect`, 'malformed-request');
       }
     } catch (error) {
-      switch (error.message) {
-      case 'incorrect-credentials':
-        error.message = `Username '${username}' does not exist or password is incorrect`;
-        error.cause = 'malformed-request';
-        break;
-      default:
+      if (!error.cause) {
         error.message = 'Invalid inputs provided';
         error.cause = 'malformed-request';
       }
+      next(error);
     }
   });
 

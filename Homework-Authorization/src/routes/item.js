@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { CustomError } = require('../middlewares/errors');
 
 module.exports = (db) => {
   router.get('/', async (req, res, next) => {
@@ -25,11 +26,9 @@ module.exports = (db) => {
     const id = req.params.id;
     try {
       const item = await db.findItem(id);
-      if (!item) throw new Error();
+      if (!item) throw new CustomError(`Item (id: ${id}) not found`, 'malformed-request');
       res.status(200).send(item);
     } catch (error) {
-      error.message = `Item (id: ${id}) not found`;
-      error.cause = 'malformed-request';
       next(error);
     }
   });
@@ -41,21 +40,15 @@ module.exports = (db) => {
     // Check if item belongs to user
     const targetItem = await db.findItem(id);
     try {
-      if (targetItem.uid !== uid) throw new Error('unauthorized');
+      if (targetItem.uid !== uid) throw new CustomError(`Unauthorized to edit item with id ${id}`, 'unauthorized');
       const item = await db.updateItem(id, { quantity, name, uid });
       res.status(201).send(item);
     } catch (error) {
-      switch (error.message) {
-      case 'unauthorized':
-        error.message = `Unauthorized to edit item with id ${id}`;
-        error.cause = 'unauthorized';
-        break;
-      default:
+      if (!error.cause) {
         error.message = `Failed to update record for ${
           name || 'item with no name'
         }`;
         error.cause = 'malformed-request';
-        break;
       }
       next(error);
     }
@@ -67,10 +60,8 @@ module.exports = (db) => {
       const success = await db.deleteItem(id);
       if (success) {
         res.status(201).send(`Item (id: ${id} deleted successfully)`);
-      } else throw new Error();
+      } else throw new CustomError(`Item (id: ${id}) not found`, 'malformed-request');
     } catch (error) {
-      error.message = `Item (id: ${id}) not found`;
-      error.cause = 'malformed-request';
       next(error);
     }
   });
