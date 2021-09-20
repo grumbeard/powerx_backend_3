@@ -7,15 +7,11 @@ module.exports = (service) => {
       const token = authHeader.split(' ')[1];
       try {
         const { uid } = await service.verifyToken(token);
-        if (uid) {
-          req.uid = uid;
-          next();
-        } else {
-          throw new Error();
-        }
+        req.uid = uid;
+        next();
       } catch (error) {
-        error.msg = 'Invalid token provided';
-        error.type = 'unauthorized';
+        error.message = 'Invalid token provided';
+        error.cause = 'unauthorized';
         next(error);
       }
     } else {

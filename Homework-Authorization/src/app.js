@@ -9,14 +9,15 @@ module.exports = (router) => {
   app.use(router);
 
   app.use((error, req, res, next) => {
-    if (error.type === 'malformed-request') {
-      console.log(error.msg);
+    if (error.cause === 'malformed-request') {
+      console.log(error.message);
       res.status(400).send(error);
-    } else if (error.type === 'unauthorized') {
-      console.log(error.msg);
+    } else if (error.cause === 'unauthorized') {
+      console.log(error.message);
       res.status(401).send(error);
     } else {
       console.log('Some error occured');
+      console.log(error.message)
       res.status(500).send(error);
     }
   });

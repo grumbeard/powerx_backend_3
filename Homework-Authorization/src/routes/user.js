@@ -10,8 +10,8 @@ module.exports = (db) => {
       const items = await db.findAllItemsByUser(user.id);
       res.status(200).send(items);
     } catch (error) {
-      error.msg = `Failed to fetch items for user (id: ${uid || 'n/a'})`;
-      error.type = 'malformed-request';
+      error.message = `Failed to fetch items for user (id: ${uid || 'n/a'})`;
+      error.cause = 'malformed-request';
       next(error);
     }
   });

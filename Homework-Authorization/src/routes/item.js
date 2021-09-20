@@ -13,8 +13,10 @@ module.exports = (db) => {
       const item = await db.insertItem({ quantity, name, uid });
       res.status(201).send(item);
     } catch (error) {
-      error.msg = `Failed to create record for ${name || 'item with no name'}`;
-      error.type = 'malformed-request';
+      error.message = `Failed to create record for ${
+        name || 'item with no name'
+      }`;
+      error.cause = 'malformed-request';
       next(error);
     }
   });
@@ -23,14 +25,11 @@ module.exports = (db) => {
     const id = req.params.id;
     try {
       const item = await db.findItem(id);
-      if (item) {
-        res.status(200).send(item);
-      } else {
-        throw new Error();
-      }
+      if (!item) throw new Error();
+      res.status(200).send(item);
     } catch (error) {
-      error.msg = `Item (id: ${id}) not found`;
-      error.type = 'malformed-request';
+      error.message = `Item (id: ${id}) not found`;
+      error.cause = 'malformed-request';
       next(error);
     }
   });
@@ -41,19 +40,24 @@ module.exports = (db) => {
     const id = req.params.id;
     // Check if item belongs to user
     const targetItem = await db.findItem(id);
-    if (targetItem.uid === uid) {
-      try {
-        const item = await db.updateItem(id, { quantity, name, uid });
-        res.status(201).send(item);
-      } catch (error) {
-        error.msg = `Failed to update record for ${
+    try {
+      if (targetItem.uid !== uid) throw new Error('unauthorized');
+      const item = await db.updateItem(id, { quantity, name, uid });
+      res.status(201).send(item);
+    } catch (error) {
+      switch (error.message) {
+      case 'unauthorized':
+        error.message = `Unauthorized to edit item with id ${id}`;
+        error.cause = 'unauthorized';
+        break;
+      default:
+        error.message = `Failed to update record for ${
           name || 'item with no name'
         }`;
-        error.type = 'malformed-request';
-        next(error);
+        error.cause = 'malformed-request';
+        break;
       }
-    } else {
-      res.status(401).send('Unauthorized');
+      next(error);
     }
   });
 
@@ -63,12 +67,10 @@ module.exports = (db) => {
       const success = await db.deleteItem(id);
       if (success) {
         res.status(201).send(`Item (id: ${id} deleted successfully)`);
-      } else {
-        throw new Error();
-      }
+      } else throw new Error();
     } catch (error) {
-      error.msg = `Item (id: ${id}) not found`;
-      error.type = 'malformed-request';
+      error.message = `Item (id: ${id}) not found`;
+      error.cause = 'malformed-request';
       next(error);
     }
   });
